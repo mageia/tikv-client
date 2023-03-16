@@ -114,33 +114,36 @@ pub struct KvRpcClient {
 #[async_trait]
 impl KvClient for KvRpcClient {
     async fn dispatch(&self, request: Box<dyn Request>) -> Result<Box<dyn Any + Send>> {
-        if let Some(batch_worker_arc) = self.batch_worker.clone() && request.support_batch(){
-            let batch_worker = batch_worker_arc.read().await;
-            if batch_worker.is_running() {
+        if request.support_batch() {
+            if let Some(batch_worker_arc) = self.batch_worker.clone() {
+                let batch_worker = batch_worker_arc.read().await;
+                if batch_worker.is_running() {
+                    return batch_worker.clone().dispatch(request).await;
+                }
+                drop(batch_worker);
+
+                let mut batch_worker = batch_worker_arc.write().await;
+                // batch worker is not running, because of gRPC channel is broken, create a new one
+                *batch_worker = BatchWorker::new(
+                    self.rpc_client.clone(),
+                    batch_worker.max_batch_size(),
+                    batch_worker.max_inflight_requests(),
+                    batch_worker.max_delay_duration(),
+                    batch_worker.overload_threshold(),
+                    batch_worker.options(),
+                )
+                .unwrap();
+
                 return batch_worker.clone().dispatch(request).await;
             }
-            drop(batch_worker);
-
-            let mut batch_worker = batch_worker_arc.write().await;
-            // batch worker is not running, because of gRPC channel is broken, create a new one
-            *batch_worker = BatchWorker::new(
-                self.rpc_client.clone(),
-                batch_worker.max_batch_size(),
-                batch_worker.max_inflight_requests(),
-                batch_worker.max_delay_duration(),
-                batch_worker.overload_threshold(),
-                batch_worker.options(),
-            )
-            .unwrap();
-            batch_worker.clone().dispatch(request).await
-        } else {
-            // Batch no needed if not batch enabled
-            request
-                .dispatch(
-                    &self.rpc_client,
-                    CallOption::default().timeout(self.timeout),
-                )
-                .await
         }
+
+        // Batch no needed if not batch enabled
+        request
+            .dispatch(
+                &self.rpc_client,
+                CallOption::default().timeout(self.timeout),
+            )
+            .await
     }
 }
