@@ -43,8 +43,10 @@ jobs:
       - uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-          toolchain: nightly
+          toolchain: stable
           override: true
+      - name: Install Protoc
+        uses: arduino/setup-protoc@v1
       - name: Rust Cache
         uses: Swatinem/rust-cache@v1.4.0
       - name: unit test
@@ -60,8 +62,10 @@ jobs:
       - uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-          toolchain: nightly
+          toolchain: stable
           override: true
+      - name: Install Protoc
+        uses: arduino/setup-protoc@v1
       - name: Rust Cache
         uses: Swatinem/rust-cache@v1.4.0
       - name: install tiup
