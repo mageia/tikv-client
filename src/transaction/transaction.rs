@@ -1388,11 +1388,11 @@ mod tests {
             move |req: &(dyn Any + Send)| {
                 if req.downcast_ref::<kvrpcpb::TxnHeartBeatRequest>().is_some() {
                     heartbeats_cloned.fetch_add(1, Ordering::SeqCst);
-                    Ok(Box::new(kvrpcpb::TxnHeartBeatResponse::default()) as Box<dyn Any + Send>)
+                    Ok(Box::<kvrpcpb::TxnHeartBeatResponse>::default() as Box<dyn Any + Send>)
                 } else if req.downcast_ref::<kvrpcpb::PrewriteRequest>().is_some() {
-                    Ok(Box::new(kvrpcpb::PrewriteResponse::default()) as Box<dyn Any + Send>)
+                    Ok(Box::<kvrpcpb::PrewriteResponse>::default() as Box<dyn Any + Send>)
                 } else {
-                    Ok(Box::new(kvrpcpb::CommitResponse::default()) as Box<dyn Any + Send>)
+                    Ok(Box::<kvrpcpb::CommitResponse>::default() as Box<dyn Any + Send>)
                 }
             },
         )));
@@ -1432,17 +1432,16 @@ mod tests {
             move |req: &(dyn Any + Send)| {
                 if req.downcast_ref::<kvrpcpb::TxnHeartBeatRequest>().is_some() {
                     heartbeats_cloned.fetch_add(1, Ordering::SeqCst);
-                    Ok(Box::new(kvrpcpb::TxnHeartBeatResponse::default()) as Box<dyn Any + Send>)
+                    Ok(Box::<kvrpcpb::TxnHeartBeatResponse>::default() as Box<dyn Any + Send>)
                 } else if req.downcast_ref::<kvrpcpb::PrewriteRequest>().is_some() {
-                    Ok(Box::new(kvrpcpb::PrewriteResponse::default()) as Box<dyn Any + Send>)
+                    Ok(Box::<kvrpcpb::PrewriteResponse>::default() as Box<dyn Any + Send>)
                 } else if req
                     .downcast_ref::<kvrpcpb::PessimisticLockRequest>()
                     .is_some()
                 {
-                    Ok(Box::new(kvrpcpb::PessimisticLockResponse::default())
-                        as Box<dyn Any + Send>)
+                    Ok(Box::<kvrpcpb::PessimisticLockResponse>::default() as Box<dyn Any + Send>)
                 } else {
-                    Ok(Box::new(kvrpcpb::CommitResponse::default()) as Box<dyn Any + Send>)
+                    Ok(Box::<kvrpcpb::CommitResponse>::default() as Box<dyn Any + Send>)
                 }
             },
         )));

@@ -110,7 +110,7 @@ mod tests {
         let example_ca = temp.path().join("ca");
         let example_cert = temp.path().join("cert");
         let example_pem = temp.path().join("key");
-        for (id, f) in (&[&example_ca, &example_cert, &example_pem])
+        for (id, f) in ([&example_ca, &example_cert, &example_pem])
             .iter()
             .enumerate()
         {
@@ -119,7 +119,7 @@ mod tests {
         let cert_path: PathBuf = format!("{}", example_cert.display()).into();
         let key_path: PathBuf = format!("{}", example_pem.display()).into();
         let ca_path: PathBuf = format!("{}", example_ca.display()).into();
-        let mgr = SecurityManager::load(&ca_path, &cert_path, &key_path).unwrap();
+        let mgr = SecurityManager::load(ca_path, cert_path, &key_path).unwrap();
         assert_eq!(mgr.ca, vec![0]);
         assert_eq!(mgr.cert, vec![1]);
         let key = load_pem_file("private key", &key_path).unwrap();
