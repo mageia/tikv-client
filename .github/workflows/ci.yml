@@ -31,7 +31,7 @@ jobs:
       - uses: actions-rs/cargo@v1
         with:
           command: clippy
-          args: --all-targets --all-features -- -A clippy::result-large-err -D clippy::all
+          args: --all-targets --all-features -- -A clippy::result-large-err -D warnings
 
   unit-test:
     name: unit test
