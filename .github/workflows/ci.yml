@@ -8,54 +8,36 @@ name: CI
 
 jobs:
   check:
-    name: check
+    name: Check, Fmt, Clippy, Unit Test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-          toolchain: nightly
+          toolchain: stable
           override: true
+
+      - name: Setup Protobuf Compiler
+        run: apt-get install -y protobuf-compiler
+
       - name: Rust Cache
         uses: Swatinem/rust-cache@v1.4.0
+
       - uses: actions-rs/cargo@v1
         with:
           command: check
-          args: --all-targets --all-features
 
-  fmt:
-    name: rustfmt
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: nightly
-          override: true
-      - run: rustup component add rustfmt
       - uses: actions-rs/cargo@v1
         with:
           command: fmt
           args: --all -- --check
-  clippy:
-    name: clippy
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
+
+      - uses: actions-rs/cargo@v1
         with:
-          toolchain: nightly
-          components: clippy
-          override: true
-      - name: Rust Cache
-        uses: Swatinem/rust-cache@v1.4.0
-      - uses: actions-rs/clippy-check@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          command: clippy
           args: --all-targets --all-features -- -D clippy::all
-          name: Clippy Output
+
   unit-test:
     name: unit test
     env:
@@ -72,6 +54,7 @@ jobs:
         uses: Swatinem/rust-cache@v1.4.0
       - name: unit test
         run: make unit-test
+
   integration-test:
     name: integration test
     env:

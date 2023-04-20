@@ -43,6 +43,7 @@ tikv-client-common = { version = "0.1.0", path = "tikv-client-common" }
 tikv-client-pd = { version = "0.1.0", path = "tikv-client-pd" }
 tikv-client-proto = { version = "0.1.0", path = "tikv-client-proto" }
 tikv-client-store = { version = "0.1.0", path = "tikv-client-store" }
+protos = "0.1.30"
 
 
 [dev-dependencies]
