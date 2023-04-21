@@ -1,5 +1,5 @@
 on: [push, pull_request]
-name: Cross Compile
+name: Continuous Integration
 
 jobs:
   check:
